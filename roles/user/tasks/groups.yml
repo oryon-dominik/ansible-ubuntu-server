@@ -1,0 +1,7 @@
+---
+- name: Ensure group for administration exists.
+  become: true
+  ansible.builtin.group:
+    name: "{{ adminusergroup }}"
+    state: present
+    gid: 1337

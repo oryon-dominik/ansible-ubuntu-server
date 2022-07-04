@@ -1,0 +1,17 @@
+---
+# tasks file for roles/ubuntu
+
+# Only debian supported yet.
+- name: Update ubuntu server.
+
+- name: Remove all dependencies that are no longer required for Debian.
+  become: true
+  apt:
+    autoremove: yes
+  when: ansible_facts['os_family']|lower == "debian"
+
+
+- name: Set a hostname for Debian.
+  ansible.builtin.hostname:
+    name: {{ hostname }}
+    use: debian

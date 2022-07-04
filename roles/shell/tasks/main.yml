@@ -1,0 +1,32 @@
+---
+
+- name: Install additional shell commands (that are not available as rust packages via cargo and the rust role).
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - duf                 # Disk Usage/Free Utility - https://github.com/muesli/duf
+      - silversearcher-ag   # (ag) "the silver searcher" code searching tool - https://github.com/ggreer/the_silver_searcher
+      - jq                  # jq - Command-line JSON processor - https://github.com/stedolan/jq/releases
+      - httpie              # user-friendly command-line HTTP client for the API era - https://github.com/httpie/httpie
+      - gir1.2-gtop-2.0     # System monitoring dashboard for the terminal - https://github.com/aksakalli/gtop
+    update_cache: yes
+
+
+- name: Install starship prompt.
+  include_tasks: starship.yml
+  tags: shell
+
+
+- name: Install cheat CLI cheatsheets.
+  include_tasks: cheat.yml
+  tags: shell
+
+
+- name: Install dog dns.
+  include_tasks: dog.yml
+  tags: shell
+
+
+- name: Install curlie.
+  include_tasks: curlie.yml
+  tags: shell

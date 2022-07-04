@@ -1,0 +1,8 @@
+---
+- name: Install common Debian packages.
+  include_tasks: packages.yml
+  when: ansible_facts['os_family']|lower == "debian"
+
+# - name: Install nix package manager.
+#   include_tasks: nix.yml
+#   when: ansible_facts['os_family']|lower == "debian"

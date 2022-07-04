@@ -1,0 +1,12 @@
+---
+dotfiles_debian_dependencies:
+  - git
+  - git-flow
+  - htop
+  - software-properties-common
+  - fortune-mod
+  - fortune-anarchism
+  - lolcat
+  - figlet
+  - curl
+dotfiles_repository: https://github.com/oryon-dominik/dotfiles.git

@@ -1,0 +1,18 @@
+---
+# dog - command-line DNS client - https://github.com/ogham/dog
+- name: Check latest dog binary release.
+  uri:
+    url: "https://api.github.com/repos/ogham/dog/releases/latest"
+    return_content: true
+  register: dog_latest
+
+- name: "Installing dog {{ dog_latest.json.tag_name }}."
+  loop: "{{ dog_latest.json.assets }}"
+  when:
+    - "'x86_64-unknown-linux-gnu.zip' in item.name"
+    - "'minisig' not in item.name"
+  ansible.builtin.unarchive:
+    remote_src: yes
+    src: "{{ item.browser_download_url }}"
+    dest: "{{ ansible_env.HOME }}/.local/bin"
+    keep_newer: yes

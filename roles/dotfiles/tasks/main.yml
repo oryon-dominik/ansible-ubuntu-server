@@ -1,0 +1,73 @@
+---
+- name: Get the current user.
+  user:
+    name: "{{ lookup('env', 'USER') | default('root', True) }}"
+  register: user
+
+
+- name: Install dotfiles dependencies for Debian via apt.
+  become: true
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: latest
+  with_items: "{{ dotfiles_debian_dependencies }}"
+  when: ansible_facts['os_family']|lower == "debian"
+
+
+- name: Clone the dotfiles repository.
+  ansible.builtin.git:
+    repo: "{{ dotfiles_repository }}"
+    dest: "{{ user.home }}/.dotfiles"
+
+
+- name: Modify the Debian MOTD.
+  include_tasks: motd.yml
+  when: ansible_facts['os_family']|lower == "debian"
+
+
+- name: Create some directories.
+  ansible.builtin.shell: |
+    mkdir -p "{{ user.home }}/.virtualenvs"
+    mkdir -p "{{ user.home }}/.config/fish/functions"
+
+
+- name: Make symlink script executable.
+  become: true
+  file:
+    path: "{{ user.home }}/.dotfiles/install/ubuntu/symlink_dotfiles.sh"
+    state: file
+    mode: 0755
+
+- name: Install the symlinks.
+  ansible.builtin.script: "{{ user.home }}/.dotfiles/install/ubuntu/symlink_dotfiles.sh"
+
+
+- name: Install fisher and fish plugins.
+  ansible.builtin.script: "{{ user.home }}/.dotfiles/common/fish/install_fisher_plugins.fish"
+  args:
+    executable: /bin/fish
+
+
+# TODO: Add virtualfish (virtualenvwrapper for fish), including plugins
+# pipx install virtualfish
+# vf install
+# vf addplugins compat_aliases
+
+# TODO: fish-path to the fish-config?! / virtualfish to the fish-config if not installed?!
+# TODO: I prefer using a global fish_user_paths / use it via ansible or fish_config?!°°
+
+# TODO: fish autocompletion
+
+# TBD: is this still neccessary with starship?!: TEST IT!
+# set -U VIRTUAL_ENV_DISABLE_PROMPT true
+
+# install vim-plugins # ! deprecated?!
+# curl -fLo $HOME/.vim/autoload/plug.vim --create-dirs \
+    # https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
+
+- name: Remove all dependencies that are no longer required for Debian.
+  become: true
+  apt:
+    autoremove: yes
+  when: ansible_facts['os_family']|lower == "debian"

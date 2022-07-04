@@ -1,0 +1,54 @@
+---
+
+- name: Get the current user.
+  user:
+    name: "{{ lookup('env', 'USER') | default('root', True) }}"
+  register: user
+
+
+- name: Create temporary installation directory
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: .rustup.install
+  register: temp
+  changed_when: False
+
+
+- name: Install nightly RustUp.
+  ansible.builtin.shell: |
+    set -o pipefail
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain nightly
+  args:
+    creates: "{{ user.home }}/.cargo/bin/rustup"
+    executable: /bin/bash
+  environment:
+    TMPDIR: '{{ temp.path }}'
+    RUSTUP_HOME: "{{ user.home }}/.rustup"
+    CARGO_HOME: "{{ user.home }}/.cargo"
+
+
+- name: Install all modern unix cargo crates.
+  ansible.builtin.shell: |
+    set -o pipefail
+    cargo install --list | \
+    awk 'BEGIN{ code=1 } {if ($1 == "{{ item }}"){ code=0 }} END{ exit code }' || \
+    cargo install {{ item }}
+  with_items: "{{ rustup_cargo_crates|list }}"
+  register: crate_install_result
+  changed_when: "'Installed package' in crate_install_result.stderr"
+  args:
+    executable: /bin/bash
+  environment:
+    PATH: "{{ ansible_env.PATH }}:{{ user.home }}/.cargo/bin"
+    TMPDIR: '{{ temp.path }}'
+    RUSTUP_HOME: "{{ user.home }}/.rustup"
+    CARGO_HOME: "{{ user.home }}/.cargo"
+  when:
+    - rustup_cargo_crates is defined
+
+
+- name: Cleanup temporary installation directory.
+  ansible.builtin.file:
+    path: "{{ temp.path }}"
+    state: absent
+  changed_when: False

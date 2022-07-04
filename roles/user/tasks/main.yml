@@ -1,0 +1,8 @@
+---
+- name: Add the groups.
+  include_tasks: groups.yml
+  tags: groups
+
+- name: Profile for the user admin.
+  include_tasks: admin.yml
+  tags: users

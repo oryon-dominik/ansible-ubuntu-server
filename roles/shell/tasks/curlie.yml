@@ -1,0 +1,17 @@
+---
+# curlie - The power of curl, the ease of use of httpie. - https://github.com/rs/curlie/releases
+- name: Check latest curlie binary release.
+  uri:
+    url: "https://api.github.com/repos/rs/curlie/releases/latest"
+    return_content: true
+  register: curlie_latest
+
+- name: "Installing curlie {{ curlie_latest.json.tag_name }}."
+  loop: "{{ curlie_latest.json.assets }}"
+  when:
+    - "'_linux_amd64.tar.gz' in item.name"
+  ansible.builtin.unarchive:
+    remote_src: yes
+    src: "{{ item.browser_download_url }}"
+    dest: "{{ ansible_env.HOME }}/.local/bin"
+    keep_newer: yes

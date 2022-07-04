@@ -1,0 +1,13 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: Ubuntu 22.04 desktop provisioning playbook for basic system configuration on localhost.
+  hosts: local
+  roles:
+    - fish
+    - user
+    - rust
+    - shell
+    - common
+    - dotfiles
+    # - go
+    # - python

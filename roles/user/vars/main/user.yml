@@ -1,0 +1,7 @@
+---
+adminusername: admin
+adminuserpass: bar
+adminusersalt: foo
+adminusergroup: admin
+# adminuserdefaultgroups is a comma seperated list of strings - beginning with a comma - like ',video,foo'
+adminuserdefaultgroups: ""

@@ -1,0 +1,38 @@
+---
+# TODO: the script does not work as root, use a default nix user instead
+# TODO: add group 'nixbld' specified in 'build-users-group'
+
+- name: Get the current user.
+  user:
+    name: "{{ lookup('env', 'USER') | default('root', True) }}"
+  register: user
+
+
+- name: Print user to stdout.
+  ansible.builtin.debug:
+    var: user.stdout_lines
+
+
+- name: Recursively change ownership of nix to the user.
+  become: true
+  ansible.builtin.file:
+    path: /nix
+    state: directory
+    recurse: yes
+    owner: "{{ user.name }}"
+    group: "{{ user.name }}"
+
+
+- name: Install curl via apt.
+  become: true
+  ansible.builtin.apt:
+    name: curl
+    state: latest
+
+
+- name: Install nix.
+  become: true
+  ansible.builtin.shell: sh <(curl -L https://nixos.org/nix/install) --no-daemon
+
+
+# TODO: test with:- nix-env --install hello

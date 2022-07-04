@@ -1,0 +1,19 @@
+---
+- name: Create the admin user.
+  become: true
+  ansible.builtin.user:
+    name: "{{ adminusername }}"
+    comment: The sysadmin himself.
+    password: "{{ adminuserpass|password_hash('sha512', adminusersalt) }}"
+    state: present
+    shell: /bin/fish
+    groups: "{{ adminusergroup }},{{ adminuserdefaultgroups }}"
+    append: yes
+    uid: 1000
+    update_password: on_create
+    generate_ssh_key: yes
+    ssh_key_bits: 2048
+    ssh_key_comment: The system administrator.
+    ssh_key_file: .ssh/id_ed25519_{{ lookup('env', 'NAME') | default('ANSIBLE', True) | upper }}
+    ssh_key_type: ed25519
+  register: user
