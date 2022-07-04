@@ -1,7 +1,7 @@
 ---
 
 - name: Install additional shell commands (that are not available as rust packages via cargo and the rust role).
-  become: true
+  become: True
   ansible.builtin.apt:
     pkg:
       - duf                 # Disk Usage/Free Utility - https://github.com/muesli/duf

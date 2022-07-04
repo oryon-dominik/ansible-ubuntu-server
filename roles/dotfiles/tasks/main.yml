@@ -6,7 +6,7 @@
 
 
 - name: Install dotfiles dependencies for Debian via apt.
-  become: true
+  become: True
   ansible.builtin.apt:
     name: "{{ item }}"
     state: latest
@@ -32,7 +32,7 @@
 
 
 - name: Make symlink script executable.
-  become: true
+  become: True
   file:
     path: "{{ user.home }}/.dotfiles/install/ubuntu/symlink_dotfiles.sh"
     state: file
@@ -67,7 +67,7 @@
 
 
 - name: Remove all dependencies that are no longer required for Debian.
-  become: true
+  become: True
   apt:
     autoremove: yes
   when: ansible_facts['os_family']|lower == "debian"

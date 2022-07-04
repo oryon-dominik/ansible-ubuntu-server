@@ -1,18 +1,18 @@
 ---
 - name: Link the message of the day.
-  become: true
+  become: True
   ansible.builtin.shell: ln -sfv "{{ user.home }}/.dotfiles/common/motd/motd" /etc/
 
 
 - name: We don't need the MOTD help text.
-  become: true
+  become: True
   ansible.builtin.file:
     path: /etc/update-motd.d/10-help-text
     state: absent
 
 
 - name: And we deactivate the dynamic news.
-  become: true
+  become: True
   ansible.builtin.lineinfile:
     path: /etc/default/motd-news
     regexp: '^ENABLED'

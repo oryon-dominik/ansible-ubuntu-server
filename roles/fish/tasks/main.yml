@@ -1,18 +1,18 @@
 ---
 - name: Add fish repository from PPA and install its signing key on Ubuntu target.
-  become: true
+  become: True
   ansible.builtin.apt_repository:
     repo: ppa:fish-shell/release-3
 
 - name: Install the fish package.
-  become: true
+  become: True
   ansible.builtin.apt:
     name: fish
     state: present
     update_cache: yes
 
 - name: Ensure fish is added to /etc/shells.
-  become: true
+  become: True
   ansible.builtin.lineinfile:
     state: present
     path: /etc/shells

@@ -1,6 +1,6 @@
 ---
 - name: Create the admin user.
-  become: true
+  become: True
   ansible.builtin.user:
     name: "{{ adminusername }}"
     comment: The sysadmin himself.
